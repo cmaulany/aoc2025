@@ -21,16 +21,16 @@ const findTwoMaxJolts = (bank: Bank): number => {
     return Number(bank[leftIndex].toString() + bank[rightIndex].toString());
 };
 
-
 const findMaxJolts = (bank: Bank, count: number): number => {
     let index = 0;
-    const ns = [];
+    const indexes = [];
     for (let i = 0; i < count; i++) {
-        index = findMaxIndex(bank.slice(index, bank.length - count + i + 1)) + index;
-        ns.push(index);
+        const slice = bank.slice(index, bank.length - count + i + 1);
+        index += findMaxIndex(slice);
+        indexes.push(index);
         index++;
     }
-    return Number(ns.map((n) => bank[n]).join(''));
+    return Number(indexes.map((n) => bank[n]).join(''));
 };
 
 const sum = (ns: number[]) => ns.reduce((a, b) => a + b);
