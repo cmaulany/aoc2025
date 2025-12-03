@@ -16,7 +16,7 @@ const isRepeatingOnce = (id: number) => {
     const lhs = idString.slice(0, middle);
     const rhs = idString.slice(middle);
     return lhs === rhs;
-}
+};
 
 const isRepeating = (id: number) => {
     const idString = id.toString();
@@ -28,7 +28,7 @@ const isRepeating = (id: number) => {
         }
     }
     return false;
-}
+};
 
 const sum = (ns: number[]) => ns.reduce((a, b) => a + b);
 

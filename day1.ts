@@ -29,7 +29,7 @@ const moveDial = (state: State, movement: Movement): State => {
         count++;
     }
     return { count, position };
-}
+};
 
 const tickDial = (state: State, movement: Movement): State => {
     let { count, position, } = state;
@@ -45,7 +45,7 @@ const tickDial = (state: State, movement: Movement): State => {
         }
     }
     return { count, position };
-}
+};
 
 const run = (input: string) => {
     const initialState: State = {
@@ -56,7 +56,7 @@ const run = (input: string) => {
     const part1 = movements.reduce(moveDial, initialState).count;
     const part2 = movements.reduce(tickDial, initialState).count;
     return { part1, part2 };
-}
+};
 
 console.log('Example', run(exampleInput));
 console.log('Result', run(input));
