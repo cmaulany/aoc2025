@@ -8,7 +8,10 @@ type Tile = PaperRoll | Empty;
 type Grid = Tile[][];
 type Position = { x: number; y: number };
 
-const parseInput = (input: string): Grid => input.split('\n').map((line) => line.split('') as Tile[]);
+const parseInput = (input: string): Grid =>
+    input
+        .split('\n')
+        .map((line) => line.split('') as Tile[]);
 
 const NEIGHBOR_DELTAS = [
     { x: -1, y: -1 },
@@ -41,8 +44,8 @@ const getNeighbors = (grid: Grid, position: Position) => {
 
 const countPaperRolls = (grid: Grid) => grid.flat().filter((tile) => tile === '@').length;
 
-const removeAccessibleRolls = (grid: Grid) => {
-    return grid.map((line, y) => line.map((tile, x) => {
+const removeAccessibleRolls = (grid: Grid) =>
+    grid.map((line, y) => line.map((tile, x) => {
         if (tile === '.') {
             return tile;
         }
@@ -53,7 +56,6 @@ const removeAccessibleRolls = (grid: Grid) => {
         }
         return tile;
     }));
-};
 
 const removeAllAccessibleRolls = (grid: Grid) => {
     let previousCount = Infinity;
@@ -62,7 +64,7 @@ const removeAllAccessibleRolls = (grid: Grid) => {
         grid = removeAccessibleRolls(grid);
     }
     return grid;
-}
+};
 
 const run = (input: string) => {
     const grid = parseInput(input);
@@ -70,7 +72,7 @@ const run = (input: string) => {
     const part1 = initialCount - countPaperRolls(removeAccessibleRolls(grid));
     const part2 = initialCount - countPaperRolls(removeAllAccessibleRolls(grid));
     return { part1, part2 };
-}
+};
 
 console.log('Example', run(exampleInput));
 console.log('Result', run(input));
