@@ -23,36 +23,25 @@ const parseInput = (input: string): Problem[] => {
     return problems;
 };
 
-const rotateLeft = (lines: string[]): string[] => {
-    const newGrid: string[] = [];
-    const width = lines[0].length;
-    const height = lines.length;
-    for (let x = 0; x < width; x++) {
-        const row = [];
-        for (let y = 0; y < height; y++) {
-            row[y] = lines[y][x];
-        }
-        newGrid[x] = row.join('');
-    }
-    return newGrid;
-}
+const flip = (lines: string[]): string[] =>
+    lines[0]
+        .split('')
+        .map((_, x) => lines
+            .map((_, y) => lines[y][x])
+            .join('')
+        );
 
 const parseInputCephalopod = (input: string): Problem[] => {
     const lines = input.split('\n');
     const numberLines = lines.slice(0, -1);
     const operationLine = lines.at(-1);
 
-    const rotated = rotateLeft(numberLines);
-    const numberGrid: number[][] = [];
-    let numbers: number[] = [];
-    for (let i = 0; i <= rotated.length; i++) {
-        if (i >= rotated.length || rotated[i].trim() === '') {
-            numberGrid.push(numbers);
-            numbers = [];
-            continue;
-        }
-        numbers.push(Number(rotated[i]))
-    }
+    const numberGrid: number[][] =
+        flip(numberLines)
+            .map((line) => line.trim())
+            .join('\n')
+            .split('\n\n')
+            .map((part) => part.split('\n').map(Number));
     const operations = operationLine?.trim().split(/ +/) as Operation[];
 
     const problems = operations.map<Problem>((operation, i) => {
@@ -69,7 +58,7 @@ const SOLVERS = {
 
 const solveProblem = (problem: Problem) => {
     const solver = SOLVERS[problem.operation];
-    return problem.numbers.reduce((solver));
+    return problem.numbers.reduce(solver);
 };
 
 const run = (input: string) => {

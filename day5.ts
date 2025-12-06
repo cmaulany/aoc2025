@@ -32,18 +32,18 @@ const merge = (a: Range, b: Range): Range[] => {
     return [a, b];
 };
 
-const mergeAll = (ranges: Range[]): Range[] => {
-    const sorted = ranges.sort((a, b) => a[0] > b[0] ? 1 : -1);
-    return sorted.reduce<Range[]>((ranges, curr) => {
-        const previous = ranges.pop();
-        if (!previous) {
-            ranges.push(curr);
-        } else {
-            ranges.push(...merge(previous, curr));
-        }
-        return ranges;
-    }, []);
-};
+const mergeAll = (ranges: Range[]): Range[] =>
+    ranges
+        .toSorted((a, b) => a[0] > b[0] ? 1 : -1)
+        .reduce<Range[]>((ranges, current) => {
+            const previous = ranges.pop();
+            if (!previous) {
+                ranges.push(current);
+            } else {
+                ranges.push(...merge(previous, current));
+            }
+            return ranges;
+        }, []);
 
 const run = (input: string) => {
     const { ranges, ids } = parseInput(input);
