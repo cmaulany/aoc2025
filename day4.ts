@@ -59,11 +59,14 @@ const removeAccessibleRolls = (grid: Grid) =>
 
 const removeAllAccessibleRolls = (grid: Grid) => {
     let previousCount = Infinity;
-    while (countPaperRolls(grid) < previousCount) {
-        previousCount = countPaperRolls(grid);
-        grid = removeAccessibleRolls(grid);
+    let currentGrid = grid;
+    let currentCount = countPaperRolls(grid);
+    while (currentCount < previousCount) {
+        previousCount = currentCount;
+        currentGrid = removeAccessibleRolls(currentGrid);
+        currentCount = countPaperRolls(currentGrid);
     }
-    return grid;
+    return currentGrid;
 };
 
 const run = (input: string) => {
