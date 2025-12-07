@@ -28,7 +28,7 @@ const moveBeams = (state: State): State => {
             nextBeams.push([x + 1, y]);
             nextSplitCount++;
         } else if (tile === '.' && y < nextGrid.length - 1) {
-            // nextGrid[y][x] = '|';
+            nextGrid[y][x] = '|';
             nextBeams.push([x, y + 1]);
         }
     });
@@ -38,16 +38,41 @@ const moveBeams = (state: State): State => {
         beams: nextBeams,
         splitCount: nextSplitCount,
     };
-}
+};
 
 const simulateBeams = (state: State): State => {
     let currentState = state;
     while (currentState.beams.length > 0) {
         currentState = moveBeams(currentState);
-        // console.log(currentState.grid.map((line) => line.join('')).join('\n'));
     }
     return currentState;
-}
+};
+
+type Key = `${number},${number}`;
+const cache: { [key: Key]: number } = {};
+
+const countSplit = (grid: Grid, beam: Position): number => {
+    const [x, y] = beam;
+    const key = `${x},${y}` as Key;
+    if (key in cache) {
+        return cache[key];
+    }
+    const height = grid.length;
+    const beams = [[x - 1, y], [x + 1, y]];
+    const castBeams = beams.map((beam) => {
+        let [x, y] = beam;
+        while (y < height) {
+            if (grid[y][x] === '^') {
+                return countSplit(grid, [x, y]);
+            }
+            y++;
+        }
+        return 1;
+    });
+    const result = castBeams.reduce((a, b) => a + b);
+    cache[key] = result;
+    return result;
+};
 
 const run = (input: string) => {
     const grid = parseInput(input);
@@ -59,8 +84,9 @@ const run = (input: string) => {
     };
     const result = simulateBeams(state);
     const part1 = result.splitCount;
-    return { part1 };
-}
+    const part2 = countSplit(grid, start);
+    return { part1, part2 };
+};
 
 console.log('Example', run(exampleInput));
 console.log('Result', run(input));
