@@ -26,15 +26,16 @@ const isFresh = (ranges: Range[], id: number) => ranges.some((range) => contains
 const merge = (a: Range, b: Range): Range[] => {
     const [startA, endA] = a;
     const [startB, endB] = b;
-    if (startB >= startA && startB <= endA) {
-        return [[Math.min(startA, startB), Math.max(endA, endB)]];
+    if (startB <= endA) {
+        const merged: Range = [Math.min(startA, startB), Math.max(endA, endB)];
+        return [merged];
     }
     return [a, b];
 };
 
 const mergeAll = (ranges: Range[]): Range[] =>
     ranges
-        .toSorted((a, b) => a[0] > b[0] ? 1 : -1)
+        .toSorted((a, b) => a[0] - b[0])
         .reduce<Range[]>((ranges, current) => {
             const previous = ranges.pop();
             if (!previous) {

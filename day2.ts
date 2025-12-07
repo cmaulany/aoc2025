@@ -37,7 +37,7 @@ const run = (input: string) => {
     const part1 = sum(ranges.flatMap(expandRange).filter(isRepeatingOnce));
     const part2 = sum(ranges.flatMap(expandRange).filter(isRepeating));
     return { part1, part2 };
-}
+};
 
 console.log('Example', run(exampleInput));
 console.log('Result', run(input));

@@ -56,7 +56,7 @@ const SOLVERS = {
     '+': (a: number, b: number) => a + b,
 };
 
-const solveProblem = (problem: Problem) => {
+const solveProblem = (problem: Problem): number => {
     const solver = SOLVERS[problem.operation];
     return problem.numbers.reduce(solver);
 };
