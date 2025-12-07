@@ -77,13 +77,11 @@ const countSplit = (grid: Grid, beam: Position): number => {
 const run = (input: string) => {
     const grid = parseInput(input);
     const start = getStart(grid);
-    const state: State = {
+    const part1 = simulateBeams({
         beams: [start],
         grid,
         splitCount: 0,
-    };
-    const result = simulateBeams(state);
-    const part1 = result.splitCount;
+    }).splitCount;
     const part2 = countSplit(grid, start);
     return { part1, part2 };
 };
