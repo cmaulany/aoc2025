@@ -30,7 +30,7 @@ const getDistances = (positions: Position[]): number[][] =>
         positions.slice(0, j).map((b, i) => [i, j, distance(a, b)])
     );
 
-const connect = (state: State, i: number, j: number) => {
+const connect = (state: State, i: number, j: number): void => {
     const {
         boxToCircuit,
         circuitSize,
@@ -70,8 +70,9 @@ const connectUntil = (positions: Position[], condition: (state: State) => boolea
         i: 0,
     };
     while (!condition(state)) {
-        const connection = sortedDistances[state.i++];
+        const connection = sortedDistances[state.i];
         connect(state, connection[0], connection[1]);
+        state.i++;
     }
     return state;
 };
