@@ -1,5 +1,5 @@
-const exampleInput = await Deno.readTextFile("examples/day8.txt");
-const input = await Deno.readTextFile("inputs/day8.txt");
+const exampleInput = await Deno.readTextFile('examples/day8.txt');
+const input = await Deno.readTextFile('inputs/day8.txt');
 
 type Position = [x: number, y: number, z: number];
 

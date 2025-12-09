@@ -1,5 +1,5 @@
-const exampleInput = await Deno.readTextFile("examples/day3.txt");
-const input = await Deno.readTextFile("inputs/day3.txt");
+const exampleInput = await Deno.readTextFile('examples/day3.txt');
+const input = await Deno.readTextFile('inputs/day3.txt');
 
 type Bank = number[];
 

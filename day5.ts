@@ -1,5 +1,5 @@
-const exampleInput = await Deno.readTextFile("examples/day5.txt");
-const input = await Deno.readTextFile("inputs/day5.txt");
+const exampleInput = await Deno.readTextFile('examples/day5.txt');
+const input = await Deno.readTextFile('inputs/day5.txt');
 
 type Range = [start: number, end: number];
 

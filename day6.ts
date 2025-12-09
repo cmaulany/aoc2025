@@ -1,5 +1,5 @@
-const exampleInput = await Deno.readTextFile("examples/day6.txt");
-const input = await Deno.readTextFile("inputs/day6.txt");
+const exampleInput = await Deno.readTextFile('examples/day6.txt');
+const input = await Deno.readTextFile('inputs/day6.txt');
 
 type Operation = '*' | '+';
 

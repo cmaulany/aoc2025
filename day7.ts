@@ -1,5 +1,5 @@
-const exampleInput = await Deno.readTextFile("examples/day7.txt");
-const input = await Deno.readTextFile("inputs/day7.txt");
+const exampleInput = await Deno.readTextFile('examples/day7.txt');
+const input = await Deno.readTextFile('inputs/day7.txt');
 
 type Tile = '.' | '^' | 'S' | '|';
 type Grid = Tile[][];

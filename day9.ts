@@ -1,5 +1,5 @@
-const exampleInput = await Deno.readTextFile("examples/day9.txt");
-const input = await Deno.readTextFile("inputs/day9.txt");
+const exampleInput = await Deno.readTextFile('examples/day9.txt');
+const input = await Deno.readTextFile('inputs/day9.txt');
 
 type Position = [x: number, y: number];
 type Edge = [Position, Position];
@@ -31,13 +31,12 @@ const toPolygon = (positions: Position[]): Polygon =>
  * Returns true if a horizontal and vertical edge overlap.
  */
 const intersectsSimple = (horizontal: Edge, vertical: Edge) => {
-    /**           o v0x, v0y
-     *            |
-     *    o-------+-----o
-     * h0x,h0y    |  h1x, h1y   
-     *            |
-     *            o v1x, v1y
-     */
+    //            o v0x, v0
+    //            |
+    //    o-------+-----
+    // h0x,h0y    |  h1x, h1y
+    //            |
+    //            o v1x, v1
     const [[h0x, h0y], [h1x, _h1y]] = horizontal;
     const [[v0x, v0y], [_v1x, v1y]] = vertical;
     return (
