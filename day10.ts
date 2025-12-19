@@ -8,154 +8,90 @@ type Button = number[];
 type Counter = number[];
 
 type Machine = {
-    goal: Light[];
-    buttons: Button[];
+    lightsGoal: Light[];
     counterGoal: Counter;
-    // state: Light[];
+    buttons: Button[];
 };
 
 const parseInput = (input: string): Machine[] => input.split('\n').map((line) => {
     const split = line.split(' ').map((part) => part.slice(1, -1));
-    const goal = split[0].split('');
-    const buttons = split.slice(1, -1).map((part) => part.split(',').map(Number)).sort((a, b) => a.length - b.length);
+    const lightsGoal = split[0].split('');
+    const buttons = split.slice(1, -1).map((part) => part.split(',').map(Number)); //.sort((a, b) => a.length - b.length);
     const counterGoal = split.at(-1)?.split(',').map(Number);
-    return { goal, buttons, counterGoal } as Machine;
+    return { lightsGoal, buttons, counterGoal } as Machine;
 });
 
-const flip = (light: Light) => light === '#' ? '.' : '#';
+const flipLight = (light: Light) => light === '#' ? '.' : '#';
 
-const toggleLight = (lights: Light[], button: Button) =>
-    lights.map((light, i) => button.includes(i) ? flip(light) : light);
+const flipLights = (lights: Light[], button: Button) =>
+    lights.map((light, i) => button.includes(i) ? flipLight(light) : light);
 
-const increaseCounter = (counter: Counter, button: Button, m = 1) =>
-    counter.map((n, i) => button.includes(i) ? n + m : n);
-
-type State = {
-    lights: Light[];
-    presses: number[];
-}
-
-const findPressesToGoal = (machine: Machine): State | null => {
-    const initialState = {
-        lights: machine.goal.map(() => '.'),
-        presses: [],
-    } as State;
-
-    const seenStates = new Set<string>();
-
-    const unvisited: State[] = [initialState];
-    while (unvisited.length > 0) {
-        const current = unvisited.shift()!;
-        const nextStates = machine.buttons
-            .map((button, i) => ({
-                lights: toggleLight(current.lights, button),
-                presses: [...current.presses, i],
-            }))
-            .filter((state) => !seenStates.has(state.lights.join('')));
-        const goalState = nextStates.find((state) => state.lights.join('') === machine.goal.join(''));
-        if (goalState) {
-            return goalState;
-        }
-        nextStates.forEach((state) => seenStates.add(state.lights.join('')));
-        unvisited.push(...nextStates);
+const findSeqsToLights = (buttons: Button[], lights: Light[], seq: Button[] = []): Button[][] => {
+    const solutions = [];
+    if (lights.every((light) => light === '.')) {
+        solutions.push(seq);
     }
-    return null;
-};
-
-type State2 = {
-    counter: number[];
-    presses: number;
-}
-
-const findMaxPresses = (counter: number[], goal: number[], button: Button) => {
-    const deltas = goal.map((n, i) => n - counter[i]).filter((_, i) => button.includes(i));
-    // console.log(deltas);
-    return Math.min(...deltas);
-};
-
-const findPressesToGoal2 = (machine: Machine): State2 | null => {
-    const initialState = {
-        counter: machine.counterGoal.map(() => 0),
-        presses: 0,
-    } as State2;
-
-    const visited: { [key: string]: State2 } = {};
-
-    const unvisited: State2[] = [initialState];
-
-    let i = 0;
-    while (unvisited.length > 0) {
-        const current = unvisited.pop()!;
-
-        i++;
-        if (i % 10000 === 0) {
-            console.log(machine.counterGoal.join(','), '-', current.counter.join(','))
-        }
-
-        {
-            const nextStates = machine.buttons
-                .flatMap((button) => {
-                    const presses = findMaxPresses(current.counter, machine.counterGoal, button)
-                    return [
-                        {
-                            counter: increaseCounter(current.counter, button),
-                            presses: current.presses + 1,
-                        },
-                        // {
-                        //     counter: increaseCounter(current.counter, button, presses),
-                        //     presses: current.presses + presses,
-                        // }
-                    ];
-                })
-                .filter((state) => !(state.counter.join(',') in visited) && state.counter.every((n, i) => n <= machine.counterGoal[i]));
-            const goalState = nextStates.find((state) => state.counter.join(',') === machine.counterGoal.join(','));
-            if (goalState) {
-                return goalState;
-            }
-            nextStates.forEach((state) => visited[state.counter.join(',')] = state);
-            unvisited.unshift(...nextStates);
-        }
-
-        {
-            const nextStates = machine.buttons
-                .flatMap((button) => {
-                    const presses = findMaxPresses(current.counter, machine.counterGoal, button);
-                    if (presses === 0) {
-                        return [];
-                    }
-                    return [
-                        // {
-                        //     counter: increaseCounter(current.counter, button),
-                        //     presses: current.presses + 1,
-                        // },
-                        {
-                            counter: increaseCounter(current.counter, button, presses),
-                            presses: current.presses + presses,
-                        }
-                    ];
-                })
-                .filter((state) => !(state.counter.join(',') in visited) && state.counter.every((n, i) => n <= machine.counterGoal[i]));
-            const goalState = nextStates.find((state) => state.counter.join(',') === machine.counterGoal.join(','));
-            if (goalState) {
-                return goalState;
-            }
-            nextStates.forEach((state) => visited[state.counter.join(',')] = state);
-            unvisited.push(...nextStates);
-        }
-
+    if (buttons.length === 0) {
+        return solutions;
     }
-    return null;
+    const [button, ...rest] = buttons;
+    const on = findSeqsToLights(rest, flipLights(lights, button), [...seq, button]);
+    const off = findSeqsToLights(rest, lights, seq);
+    solutions.push(...on);
+    solutions.push(...off);
+    return solutions;
 };
+
+// deno-lint-ignore no-explicit-any
+const memoize = <T extends (...args: any[]) => any>(
+    fn: T,
+    toKey: (...args: Parameters<T>) => string = (...args) => JSON.stringify(args),
+): T => {
+    const cache: { [key: string]: ReturnType<T> } = {};
+    return ((...args: Parameters<T>) => {
+        const key = toKey(...args);
+        if (key in cache) {
+            return cache[key];
+        }
+        const result = fn(...args);
+        cache[key] = result;
+        return result;
+    }) as T;
+};
+
+const findPressesToCounter = memoize((
+    buttons: Button[],
+    counter: number[],
+): number => {
+    if (counter.every((n) => n === 0)) {
+        return 0;
+    }
+    if (counter.some((n) => n < 0)) {
+        return Infinity;
+    }
+
+    const unevenLights = counter.map((n) => n % 2 === 1 ? '#' : '.');
+    const combinations = findSeqsToLights(buttons, unevenLights);
+    const results = combinations.map((combination) => {
+        const remainder = combination.reduce((counter, button) => counter.map((n, i) => button.includes(i) ? n - 1 : n), counter);
+        const halved = remainder.map((n) => Math.round(n / 2));
+        const res = 2 * findPressesToCounter(buttons, halved) + combination.length;
+        return res;
+    });
+    const min = results.reduce((a, b) => Math.min(a, b), Infinity);
+    return min;
+});
 
 const run = (input: string) => {
     const machines = parseInput(input);
-    // console.log(machines);
-    const states = machines.map(findPressesToGoal);
-    const part1 = states.map((state) => state?.presses.length).reduce((a, b) => a + b);
-    // console.log(findMaxPresses([2, 2, 4, 4], [4, 4, 4, 4], [0, 3]))
-    // console.log(machines.at(-1));
-    const states2 = machines.map(findPressesToGoal2);
-    const part2 = states2.map((state) => state?.presses).reduce((a, b) => a + b);
+    const part1 = machines
+        .map((machine) => findSeqsToLights(machine.buttons, machine.lightsGoal))
+        .map((seq) => seq.map((p) => p.length))
+        .map((seqLength) => seqLength.reduce((a, b) => Math.min(a, b)))
+        .reduce((a, b) => a + b);
+    const part2 = machines
+        .map((machine) => findPressesToCounter(machine.buttons, machine.counterGoal))
+        .reduce((a, b) => a + b);
     return { part1, part2 };
 };
 
