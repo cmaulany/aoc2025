@@ -87,7 +87,7 @@ const run = (input: string) => {
     const part1 = machines
         .map((machine) => findSeqsToLights(machine.buttons, machine.lightsGoal))
         .map((seq) => seq.map((p) => p.length))
-        .map((seqLength) => seqLength.reduce((a, b) => Math.min(a, b)))
+        .map((seqLengths) => seqLengths.reduce((a, b) => Math.min(a, b)))
         .reduce((a, b) => a + b);
     const part2 = machines
         .map((machine) => findPressesToCounter(machine.buttons, machine.counterGoal))
